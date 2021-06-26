@@ -24,11 +24,14 @@ public class EventService {
     private EventRepo eventRepo;
     @Autowired
     private RoomRepo roomRepo;
+    @Autowired
+    private EmailSender emailSender;
 
     //To Add Event by registered employee
     public String addEvent(EventRegister event) {
 
-        if(!event.getEmail().equals(SecurityContextHolder.getContext().getAuthentication().getName())){
+        String loggedInEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        if(!event.getEmail().equals(loggedInEmail)){
             throw new IllegalStateException("Not Authorized!");
         }
 
@@ -43,6 +46,12 @@ public class EventService {
 
         ));
 
+        //Send confirmation mail for adding an event
+        emailSender.sendSimpleEmail(loggedInEmail,
+                "Your Event is sent for Approval. " +
+                        "You will receive a conformation mail on approval of your slot.",
+                "Event Added");
+
         return "Event Added";
     }
 
@@ -50,8 +59,15 @@ public class EventService {
     public String deleteEvent(Long id) {
 
         String role  = SecurityContextHolder.getContext().getAuthentication().getAuthorities().toString();
+        Employee employeeEvent = eventRepo.findById(id).get().getEventId();
         if(role.equals("[ADMIN]")){
             eventRepo.deleteById(id);
+
+            //Send Event deleted mail
+            emailSender.sendSimpleEmail(employeeEvent.getEmail(),
+                    "Your Event is Deleted By Admin.\n " +
+                            "Thank You for choosing BOOK MY EVENTS.\n Regards..",
+                    "Event Deleted");
         }
         else{
             String email = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -59,6 +75,15 @@ public class EventService {
             RegistrationEvent event = eventRepo.findById(id).get();
             if(employee.getId() == event.getEventId().getId()){
                 eventRepo.deleteById(id);
+
+                //.................................................
+                //Send Event deleted mail
+                emailSender.sendSimpleEmail(employeeEvent.getEmail(),
+                        "Your Event is Deleted.\n " +
+                                "Thank You for choosing BOOK MY EVENTS.\n Regards..",
+                        "Event Deleted");
+                //....................................................
+
             }else{
                 return "Not Authorize";
             }
@@ -83,15 +108,22 @@ public class EventService {
     //Update Event based on roles
     public String updateEvent(EventRegister event) {
         String role  = SecurityContextHolder.getContext().getAuthentication().getAuthorities().toString();
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        Employee employee = employeeRepository.findByEmail(email);
+        RegistrationEvent updatingEvent = eventRepo.findById(event.getId()).get();
+        Employee employee = eventRepo.findById(event.getId()).get().getEventId();
         if(role.equals("[ADMIN]")){
                     RegistrationEvent registrationEvent = setRegistrationEvent(event, employee);
                     eventRepo.save(registrationEvent);
+            //.................................................
+            //Send Event Updated mail
+            emailSender.sendSimpleEmail(updatingEvent.getEventId().getEmail(),
+                    "Your Event details are Updated.\n " +
+                            "Thank You for choosing BOOK MY EVENTS.\n Regards..",
+                    "Event Details Updated");
+            //....................................................
+
         }
         else {
-            RegistrationEvent existingEvent = eventRepo.findById(event.getId()).get();
-            if(employee.getId() == existingEvent.getEventId().getId()){
+            if(employee.getId() == updatingEvent.getEventId().getId()){
                 RegistrationEvent registrationEvent = setRegistrationEvent(event, employee);
                 eventRepo.save(registrationEvent);
             }else{
@@ -173,6 +205,14 @@ public class EventService {
                     event.getDuration(),
                     event
             ));
+
+            //.................................................
+            //Send Event Updated mail
+            emailSender.sendSimpleEmail(event.getEventId().getEmail(),
+                    "CONGRATULATIONS! Your Event is approved.\n " +
+                            "Thank You for choosing BOOK MY EVENTS.\n Regards..",
+                    "Event Approved");
+            //....................................................
 
             return "Approved";
         }

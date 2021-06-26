@@ -17,6 +17,9 @@ public class EmployeeService implements UserDetailsService {
 
     @Autowired
     private EmployeeRepository repo;
+    @Autowired
+    private EmailSender emailSender;
+
     private BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 
 
@@ -41,6 +44,18 @@ public class EmployeeService implements UserDetailsService {
         String encodedPassword = bCryptPasswordEncoder.encode(employee.getPassword());
         employee.setPassword(encodedPassword);
         repo.save(employee);
+
+        //.................................................
+        //Send Event Updated mail
+        emailSender.sendSimpleEmail(employee.getEmail(),
+                "SignUp Success! \n " +
+                        "You have successfully created your account with Book My Events. \n" +
+                        "Wishing you a great journey ahead. \n" +
+                        "Regards,\n" +
+                        "Team Book My Events.",
+                "Registered With Book My Events");
+        //....................................................
+
         return "Registered";
     }
 
