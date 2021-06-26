@@ -19,7 +19,7 @@ public class RegistrationService {
         boolean isValidEmail = emailValidator.test(employeeRegistration.getEmail());
 
         if (!isValidEmail){
-            throw new IllegalStateException("Inavlid Email");
+            throw new IllegalStateException("Invalid Email");
         }
 
         return service.signUp(new Employee(
