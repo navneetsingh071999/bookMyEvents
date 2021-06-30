@@ -2,6 +2,7 @@ package backendBME.controllers;
 
 import backendBME.model.EventRegister;
 import backendBME.model.RegistrationEvent;
+import backendBME.service.BookedEventsService;
 import backendBME.service.EmployeeService;
 import backendBME.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,8 @@ public class EventController {
 
     @Autowired
     private EventService eventService;
+    @Autowired
+    private BookedEventsService bookedEventsService;
 
     @PostMapping(value = "register")
     public String registerEvent(@RequestBody EventRegister event){
@@ -48,6 +51,12 @@ public class EventController {
     public List<RegistrationEvent> pendingApproval(){
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         return eventService.pendingApproval(email);
+
+    }
+
+    @DeleteMapping(value="/deletebookedevent/{id}")
+    public String deleteBookedEvent(@PathVariable Long id){
+        return bookedEventsService.deleteBookedEvent(id);
 
     }
 

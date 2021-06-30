@@ -186,14 +186,16 @@ public class EventService {
 
         boolean flag;
         //checks for already booked slots in event room table
-        if(!roomRepo.existsByroomNO(rooms.toString()).isEmpty()){
-            if(!roomRepo.existsByfromDate(event.getDateTime().toString().substring(0,10)).isEmpty()){
+        EventRoom eventRoom = roomRepo.findByfromDate(event.getDateTime());
+        if(eventRoom == null){
+            flag = true;
+        }else{
+            if(eventRoom.getRoomNo().equals(rooms)){
                 flag = false;
-            }else {
+            }
+            else {
                 flag = true;
             }
-        }else {
-            flag = true;
         }
 
         //approves event and add it to event room table

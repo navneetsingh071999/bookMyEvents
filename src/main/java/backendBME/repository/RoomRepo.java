@@ -10,10 +10,12 @@ import java.util.List;
 
 public interface RoomRepo extends CrudRepository<EventRoom, Long> {
 
-    @Query(value = "SELECT * FROM project.eventroom " +
-            "WHERE exists (select roomNo from project.eventroom where roomNo = ?1);", nativeQuery = true)
-    public List<EventRoom> existsByroomNO(String rooms);
-    @Query(value = "SELECT * FROM project.eventroom " +
-            "WHERE exists (select roomNo from project.eventroom where fromDate = ?1);", nativeQuery = true)
-    public List<EventRoom> existsByfromDate(String dateTime);
+////    @Query(value = "SELECT * FROM project.eventroom " +
+////            "WHERE exists (select roomNo from project.eventroom where roomNo = ?1);", nativeQuery = true)
+//    public boolean existsByroomNo(String rooms);
+//    @Query(value = "SELECT * FROM project.eventroom " +
+//            "WHERE exists (select roomNo from project.eventroom where fromDate = ?1);", nativeQuery = true)
+//    public List<EventRoom> existsByfromDate(String dateTime);
+
+    public EventRoom findByfromDate(Date dateTime);
 }
