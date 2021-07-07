@@ -1,10 +1,7 @@
 package backendBME.controllers;
 
 import backendBME.jwtToken.JwtUtil;
-import backendBME.model.Employee;
-import backendBME.model.EmployeeRegistration;
-import backendBME.model.JwtRequest;
-import backendBME.model.JwtResponse;
+import backendBME.model.*;
 import backendBME.service.EmployeeService;
 import backendBME.service.EventService;
 import backendBME.service.UserPrinciples;
@@ -54,10 +51,17 @@ public class EmployeeController {
         return ResponseEntity.ok(new JwtResponse(token));
     }
 
+
     @GetMapping(value = "/")
     public String home(){
             return "Welcome " + SecurityContextHolder.getContext().getAuthentication().getName();
        }
+
+     @GetMapping(value = "/user")
+     public Employee user(){
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        return employeeService.getEmployee(email);
+     }
 
     @PutMapping(value = "/admin/authenticate/{email}")
     public String authenticateEmployee(@PathVariable String email){
@@ -80,12 +84,15 @@ public class EmployeeController {
     }
 
     //Approve Register Event
-
     @PutMapping(value = "admin/approve/event/{id}")
     public String approveEvent(@PathVariable Long id){
         return eventService.approveEvents(id);
     }
 
+    @GetMapping(value = "admin/newEvents")
+    public List<RegistrationEvent> getNewEvents(){
+        return eventService.getNewEvents();
+    }
 
 
 }

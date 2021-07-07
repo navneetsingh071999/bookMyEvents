@@ -18,4 +18,7 @@ public interface EventRepo extends CrudRepository<RegistrationEvent, Long> {
     @Modifying
     @Query(value = "UPDATE `project`.`eventregistration` SET `capacity` = ?1 WHERE (`id` = ?2);", nativeQuery = true)
     public void updateCapacity(int newSeats, Long id);
+
+    @Query(value = "SELECT * FROM project.eventregistration WHERE approved = false ;", nativeQuery = true)
+    public List<RegistrationEvent> findAllNonApproved();
 }

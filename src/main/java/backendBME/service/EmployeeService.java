@@ -106,5 +106,10 @@ public class EmployeeService implements UserDetailsService {
 
     }
 
+    //To get Logged in employee
+    public Employee getEmployee(String email) {
+
+        return repo.findByEmail(email);
+    }
 }
 

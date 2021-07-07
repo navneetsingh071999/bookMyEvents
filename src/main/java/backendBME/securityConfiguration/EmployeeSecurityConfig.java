@@ -30,7 +30,6 @@ public class EmployeeSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.cors().disable();
         http
                 .csrf().disable()
                 .authorizeRequests()
@@ -49,7 +48,9 @@ public class EmployeeSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .exceptionHandling().authenticationEntryPoint(entryPoint);
+                .exceptionHandling().authenticationEntryPoint(entryPoint)
+                .and()
+                .cors();
 
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 

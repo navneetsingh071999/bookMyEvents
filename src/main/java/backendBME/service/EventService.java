@@ -5,13 +5,13 @@ import backendBME.model.Employee;
 import backendBME.model.EventRegister;
 import backendBME.model.EventRoom;
 import backendBME.model.RegistrationEvent;
+import backendBME.repository.BookedEventsRepository;
 import backendBME.repository.EmployeeRepository;
 import backendBME.repository.EventRepo;
 import backendBME.repository.RoomRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,6 +24,8 @@ public class EventService {
     private EventRepo eventRepo;
     @Autowired
     private RoomRepo roomRepo;
+    @Autowired
+    private BookedEventsRepository bookedEventsRepository;
     @Autowired
     private EmailSender emailSender;
 
@@ -61,6 +63,8 @@ public class EventService {
         String role  = SecurityContextHolder.getContext().getAuthentication().getAuthorities().toString();
         Employee employeeEvent = eventRepo.findById(id).get().getEventId();
         if(role.equals("[ADMIN]")){
+            bookedEventsRepository.deleteAllByBookId(id);
+            roomRepo.deleteAllByRoomId(id);
             eventRepo.deleteById(id);
 
             //Send Event deleted mail
@@ -74,6 +78,8 @@ public class EventService {
             Employee employee = employeeRepository.findByEmail(email);
             RegistrationEvent event = eventRepo.findById(id).get();
             if(employee.getId() == event.getEventId().getId()){
+                bookedEventsRepository.deleteAllByBookId(id);
+                roomRepo.deleteAllByRoomId(id);
                 eventRepo.deleteById(id);
 
                 //.................................................
@@ -219,5 +225,14 @@ public class EventService {
             return "Approved";
         }
         return "No rooms Available";
+    }
+
+    //To return all not approved Events
+    public List<RegistrationEvent> getNewEvents() {
+        List<RegistrationEvent> newEvents = new ArrayList();
+        for(RegistrationEvent event : eventRepo.findAllNonApproved()){
+            newEvents.add(event);
+        }
+        return newEvents;
     }
 }

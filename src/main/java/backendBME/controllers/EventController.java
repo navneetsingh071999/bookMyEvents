@@ -1,5 +1,6 @@
 package backendBME.controllers;
 
+import backendBME.model.BookedEvent;
 import backendBME.model.EventRegister;
 import backendBME.model.RegistrationEvent;
 import backendBME.service.BookedEventsService;
@@ -8,10 +9,10 @@ import backendBME.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = "*")
 @RequestMapping(value = "event")
 public class EventController {
 
@@ -34,6 +35,7 @@ public class EventController {
     public String updateEvent(@RequestBody EventRegister eventRegister){
         return eventService.updateEvent(eventRegister);
     }
+
 
     @GetMapping(value = "show")
     public List<RegistrationEvent> getEvents(){
@@ -58,6 +60,13 @@ public class EventController {
     public String deleteBookedEvent(@PathVariable Long id){
         return bookedEventsService.deleteBookedEvent(id);
 
+    }
+
+    //To get all booked event of loggedIn user
+    @GetMapping(value = "/bookedevents")
+    public List<BookedEvent> bookedEvents(){
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        return bookedEventsService.getBookedEvents(email);
     }
 
 

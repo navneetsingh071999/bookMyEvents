@@ -22,6 +22,12 @@ public class RegistrationService {
             throw new IllegalStateException("Invalid Email");
         }
 
+        if(employeeRegistration.getFirstName().isEmpty() || employeeRegistration.getLastName().isEmpty()
+        ||employeeRegistration.getEmail().isEmpty() || employeeRegistration.getEmail().isEmpty()
+        ||employeeRegistration.getPassword().isEmpty() || employeeRegistration.getMobileNo().isEmpty()){
+            throw new IllegalStateException("Details Empty");
+        }
+
         return service.signUp(new Employee(
                 employeeRegistration.getFirstName(),
                 employeeRegistration.getLastName(),

@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class BookedEventsService {
 
@@ -87,6 +89,11 @@ public class BookedEventsService {
         eventrepo.updateCapacity(newSeats,registrationEvent.getId());
         return "Event Deleted!!";
 
+    }
+
+    public List<BookedEvent> getBookedEvents(String email) {
+        Employee employee = employeeRepository.findByEmail(email);
+        return bookedeventsrepo.findAllByEmpId(employee.getId());
     }
 }
 
